@@ -1,16 +1,23 @@
 <div class="d-lg-flex half">
-    <div class="bg order-1 order-md-2" style="background-image: url('images/bg_1.jpg');"></div>
+    <div class="bg order-1 order-md-2" style="background-image: url('/images/bg_1.jpg');"></div>
     <div class="contents order-2 order-md-1">
 
-      <a href="/cetim/pt">Português</a>
-      <a href="/cetim/en">English</a>
+    <div style="text-align: center;">
+      <a href="/{{curLanguage}}">Home</a>
+        <a href="/{{curLanguage}}/contact">Contacto</a>
+    </div>
 
+    <div style="text-align: right;">
+      <a href="/switch/pt">PT</a>
+      <a href="/switch/en">EN</a>
+    </div>
+      
       <div class="container">
         <div class="row align-items-center justify-content-center">
           <div class="col-md-7">
 
-            <h3>Login to <strong>Colorlib</strong></h3>
-            <p class="mb-4">Lorem ipsum dolor sit amet elit. Sapiente sit aut eos consectetur adipisicing.</p>
+            <h3>Página <strong>Home</strong></h3>
+            <p class="mb-4">Selected language: {{curLanguage}}</p>
             <form action="#" method="post">
               <div class="form-group first">
                 <label for="username">{{t.key_username}}</label>

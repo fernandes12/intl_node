@@ -2,74 +2,83 @@ var express = require('express');
 var i18next = require('i18next')
 var router = express.Router();
 const fs = require('fs-extra')
-
-/* GET home page. */
-router.get('/', function(req, res, next) {
-
-
-  var lng = req.language // 'de-CH'
-  var lngs = req.languages // ['de-CH', 'de', 'en']
-  req.i18n.changeLanguage('en') // will not load that!!! assert it was preloaded
-
-  var exists = req.i18n.exists('myKey')
-  var translation = req.t('myKey')
-
-  const key_username = req.t('key_username')
-  const key_password = req.t('key_password')
-
-  res.render('index', { title: 'Express',  key_username, key_password});
-});
-
-router.get('/cetim/:lang', function(req, res, next) {
-
-  var lng = req.language // 'de-CH'
-  var lngs = req.languages // ['de-CH', 'de', 'en']
-  req.i18n.changeLanguage(req.params.lang) // will not load that!!! assert it was preloaded
-
-  var exists = req.i18n.exists('myKey')
-  var translation = req.t('myKey')
-
-  const key_username = req.t('key_username')
-  const key_password = req.t('key_password')
-
-  res.render('index', { title: 'Express',  key_username, key_password});
-});
-
-router.get('/cetim/test/:lang', async function(req, res, next) {
-
-  var lng = req.language // 'de-CH'
-  var lngs = req.languages // ['de-CH', 'de', 'en']
-  req.i18n.changeLanguage(req.params.lang) // will not load that!!! assert it was preloaded
-
-  // var exists = req.i18n.exists('myKey')
-  // var translation = req.t('myKey')
+var curLanguage = require('../locales/lang_helper').getCurLanguage();
+// const deault_lang = 'pt'
+// require('../locales/lang_helper')
 
 
-  // var lang_picked = req.params.lang
-  // const array_lang = require(`../locales/${lang_picked}/translation.json`)
+router.get('/switch/:lang', function(req, res) {
 
-  // const langs = Object.values(array_lang_en);
-  // console.log(langs[0])
+  require('../locales/lang_helper').setNewLanguage(req.params.lang);
 
-  //  await fs.readFile("./locales/"+req.params.lang+"/translation.json", "utf8", function(err, data) {
-  //     if (err) {
-  //       return console.log('Could not read the file')
-  //     }
-  //     const translation = JSON.parse(data)
-  //     res.render('index', { title: 'Express',  translation});
-  //   })
+  var oldURL = req.headers.referer
+  // const getLastItem = thePath => thePath.substring(thePath.lastIndexOf('/') + 1)
+
+  var split_array = oldURL.split("/")
+
+  console.log(split_array.length)
+  console.log('Original url '+oldURL)
+  console.log('Before Replacement '+ split_array[3])
+
+  split_array[3] = req.params.lang
+
+    var jointArray = []
+  for (let index = 0; index < split_array.length; index++) {
+    // jointArray.concat(split_array[index]);
+    jointArray.push(split_array[index])
+    
+  }
+
+  var stringArray = split_array.toString()
+
+
+  var stringFinished = stringArray.split(",").join("/")
+
+
+  // console.log(stringArray.replace(",", "/")) 
+  console.log(stringFinished)
+  console.log('After Replacement '+split_array[3])
+  console.log('Final changed url '+split_array)
+
+  var curLanguage = require('../locales/lang_helper').getCurLanguage;
+
+  return res.redirect(stringFinished);
+  // return res.redirect('/'+curLanguage);
+})
+
+router.get('/:lang/contact', function( req, res) {
+
+  var curLanguage = require('../locales/lang_helper').getCurLanguage();
 
   try {
     
-    const data = fs.readFileSync("./locales/"+req.params.lang+"/translation.json", "utf8")
-    console.log(data)
-    const t = JSON.parse(data)
-    res.render('index', { title: 'Express',  t});
-  } catch (err) {
-    console.error(err)
-  }
+      const data = fs.readFileSync("./locales/"+curLanguage+"/translation.json", "utf8")
+      const t = JSON.parse(data)
 
-  
+      res.render('contact_page', { title: 'Express',  t, curLanguage})
+    } catch (err) {
+      console.error(err)
+    }
+})
+
+
+router.get('/:lang', async function(req, res, next) {
+
+  var lng = req.language // 'de-CH'
+  var lngs = req.languages // ['de-CH', 'de', 'en']
+  req.i18n.changeLanguage(req.params.lang) // will not load that!!! assert it was preloaded
+
+  var curLanguage = require('../locales/lang_helper').getCurLanguage();
+
+  try {
+    
+      const data = fs.readFileSync("./locales/"+curLanguage+"/translation.json", "utf8")
+      const t = JSON.parse(data)
+
+      res.render('home', { title: 'Express',  t, curLanguage});
+    } catch (err) {
+      console.error(err)
+    }
 });
 
 module.exports = router;
